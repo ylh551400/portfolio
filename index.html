@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lyuhuan Yao — Analytics & AI Tooling</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      /* Slate palette (default) */
+      --bg-main: #eceef0;
+      --bg-alt: #dfe2e6;
+      --bg-sidebar: #e2e5e9;
+      --bg-card: #f6f7f8;
+
+      --ink: #171512;
+      --ink-soft: #4a463f;
+      --ink-mute: #8a847a;
+      --ink-faint: #b8b2a6;
+      --rule: rgba(23,21,18,0.10);
+      --rule-soft: rgba(23,21,18,0.06);
+
+      /* Accent hue 45 — amber/golden */
+      --accent: oklch(0.42 0.08 45);
+      --accent-tint: oklch(0.93 0.025 45);
+      --accent-ink: oklch(0.32 0.08 45);
+
+      --mono: 'JetBrains Mono', ui-monospace, monospace;
+      --sans: 'Inter', -apple-system, sans-serif;
+      --serif: 'Fraunces', Georgia, serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg-main);
+      color: var(--ink);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: "ss01", "cv11";
+    }
+
+    /* ————— Layout ————— */
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ————— Sidebar ————— */
+    .sidebar {
+      width: 240px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--rule);
+      padding: 2.25rem 1.5rem 1.5rem;
+      position: fixed;
+      inset: 0 auto 0 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+      letter-spacing: -0.015em;
+      margin-bottom: 0.15rem;
+    }
+    .sidebar-logo em { font-style: italic; color: var(--accent-ink); }
+
+    .sidebar-tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--ink-mute);
+      margin-bottom: 2.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-section { margin-bottom: 2rem; }
+
+    .nav-label {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--ink-mute);
+      margin-bottom: 0.6rem;
+      padding-left: 0.25rem;
+    }
+
+    .nav-items { display: flex; flex-direction: column; gap: 0.05rem; }
+
+    .nav-item {
+      font-size: 0.92rem;
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 0.38rem 0.6rem 0.38rem 0.85rem;
+      border-left: 2px solid transparent;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: baseline;
+      gap: 0.55rem;
+    }
+    .nav-item .num {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--ink-faint);
+    }
+    .nav-item:hover { color: var(--ink); border-left-color: var(--ink-faint); }
+    .nav-item.active {
+      color: var(--ink);
+      font-weight: 500;
+      border-left-color: var(--accent);
+    }
+    .nav-item.active .num { color: var(--accent-ink); }
+
+    .nav-item.back { color: var(--ink-mute); font-size: 0.85rem; padding-left: 0.85rem; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--rule-soft);
+    }
+
+    .sidebar-link {
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .sidebar-link:hover { color: var(--accent-ink); }
+
+    .sidebar-meta {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--ink-faint);
+      margin-top: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .sidebar-meta .dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: oklch(0.62 0.14 145);
+      box-shadow: 0 0 0 3px oklch(0.62 0.14 145 / 0.2);
+      animation: pulse 2.5s ease-in-out infinite;
+      margin-right: 0.35rem;
+      vertical-align: middle;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px oklch(0.62 0.14 145 / 0.15); }
+      50% { box-shadow: 0 0 0 5px oklch(0.62 0.14 145 / 0.05); }
+    }
+
+    /* ————— Main ————— */
+    .main { flex: 1; margin-left: 240px; }
+
+    .section {
+      min-height: 100vh;
+      padding: 5rem 4rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-alt { background: var(--bg-alt); }
+
+    .section-inner {
+      max-width: 820px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .section-wide {
+      max-width: 1040px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .cell-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--ink-mute);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .cell-label::before {
+      content: '';
+      width: 18px; height: 1px;
+      background: var(--ink-faint);
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 500;
+      letter-spacing: -0.018em;
+      margin-bottom: 1.5rem;
+      line-height: 1.1;
+    }
+    .section-title em { font-style: italic; color: var(--accent-ink); font-weight: 400; }
+
+    /* ————— Hero ————— */
+    .hero {
+      min-height: 100vh;
+      padding: 5rem 6rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-inner {
+      max-width: 960px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-kicker {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--ink-mute);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 4rem;
+    }
+
+    .hero-name {
+      font-family: var(--serif);
+      font-size: clamp(3.5rem, 8vw, 6.5rem);
+      font-weight: 400;
+      letter-spacing: -0.035em;
+      line-height: 0.95;
+      margin-bottom: 3rem;
+    }
+    .hero-name em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent-ink);
+    }
+
+    .hero-statement {
+      font-family: var(--serif);
+      font-size: clamp(1.5rem, 2.8vw, 2.35rem);
+      font-weight: 400;
+      line-height: 1.35;
+      color: var(--ink);
+      letter-spacing: -0.015em;
+      max-width: 820px;
+      margin-bottom: 1.25rem;
+      text-wrap: pretty;
+      min-height: 5.4em;
+    }
+    .hero-statement em {
+      font-style: italic;
+      color: var(--accent-ink);
+    }
+    .hero-statement .word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(6px);
+      animation: wordIn 0.5s cubic-bezier(.2,.7,.2,1) forwards;
+    }
+    @keyframes wordIn { to { opacity: 1; transform: translateY(0); } }
+
+    .name-breathe {
+      display: inline-block;
+      animation: breathe 7s ease-in-out infinite;
+      transform-origin: left center;
+    }
+    @keyframes breathe {
+      0%, 100% { letter-spacing: -0.035em; }
+      50%      { letter-spacing: -0.028em; }
+    }
+
+    .hero-arc span[data-phase] {
+      transition: color 0.6s ease, opacity 0.6s ease;
+      opacity: 0.55;
+    }
+    .hero-arc span[data-phase].lit {
+      color: var(--accent-ink);
+      opacity: 1;
+    }
+    .hero-arc .arrow {
+      transition: color 0.6s ease, transform 0.6s ease;
+    }
+    .hero-arc .arrow.lit {
+      color: var(--accent-ink);
+      transform: translateX(2px);
+    }
+
+    .hero-arc {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.85rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      padding: 0.75rem 1.1rem;
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      background: transparent;
+      flex-wrap: wrap;
+    }
+    .hero-arc .arrow { color: var(--accent-ink); font-weight: 500; }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      right: 6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--ink-mute);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+    .hero-scroll .line {
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--ink-faint), transparent);
+    }
+
+    /* ————— About ————— */
+    .about-intro {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      line-height: 1.45;
+      color: var(--ink);
+      margin-bottom: 2.5rem;
+      letter-spacing: -0.012em;
+      max-width: 640px;
+      text-wrap: pretty;
+    }
+    .about-intro em { color: var(--accent-ink); font-style: italic; }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--rule);
+    }
+
+    .skills-column h3 {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ink-mute);
+      margin-bottom: 1.1rem;
+      font-weight: 500;
+    }
+    .skills-column h3::before {
+      content: attr(data-num);
+      color: var(--accent-ink);
+      margin-right: 0.5rem;
+    }
+
+    .skill-item {
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--rule-soft);
+    }
+    .skill-item:last-child { border-bottom: none; }
+    .skill-item-title {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 0.15rem;
+    }
+    .skill-item-desc {
+      font-size: 0.83rem;
+      color: var(--ink-mute);
+      line-height: 1.5;
+    }
+
+    /* ————— Projects ————— */
+    .projects-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 2rem;
+    }
+    .projects-count {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--ink-mute);
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    .project-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(23,21,18,0.06);
+    }
+
+    .project-thumb {
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, var(--accent-tint), var(--bg-alt));
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--rule);
+    }
+    .project-thumb svg { width: 100%; height: 100%; display: block; }
+
+    .project-card-body { padding: 1.1rem 1.25rem 1.25rem; display: flex; flex-direction: column; flex: 1; }
+    .project-card-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--accent-ink);
+      margin-bottom: 0.5rem;
+    }
+    .project-card-title {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.4rem;
+      line-height: 1.2;
+    }
+    .project-card-desc {
+      font-size: 0.86rem;
+      color: var(--ink-soft);
+      line-height: 1.5;
+      flex: 1;
+    }
+    .project-card-footer {
+      margin-top: 0.9rem;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--rule-soft);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--ink-mute);
+    }
+    .project-card-footer .arrow {
+      color: var(--accent-ink);
+      transition: transform 0.2s ease;
+    }
+    .project-card:hover .arrow { transform: translateX(3px); }
+
+    /* ————— Project detail ————— */
+    .project-section { display: none; }
+    .project-section.active { display: flex; }
+
+    .project-detail-inner { max-width: 720px; width: 100%; margin: 0 auto; }
+
+    .project-hero-label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-ink);
+      margin-bottom: 0.75rem;
+    }
+    .project-hero-title {
+      font-family: var(--serif);
+      font-size: 2.5rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.75rem;
+      line-height: 1.05;
+    }
+
+    .project-tabs {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .project-tab {
+      padding: 0.65rem 1.1rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      color: var(--ink-mute);
+      cursor: pointer;
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s ease;
+      margin-bottom: -1px;
+    }
+    .project-tab:hover { color: var(--ink-soft); }
+    .project-tab.active {
+      color: var(--accent-ink);
+      border-bottom-color: var(--accent);
+      font-weight: 500;
+    }
+    .project-tab-content { display: none; }
+    .project-tab-content.active { display: block; }
+
+    .section-text {
+      font-size: 1.05rem;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      max-width: 640px;
+      text-wrap: pretty;
+    }
+
+    .tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 1.75rem;
+    }
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 3px;
+      background: var(--accent-tint);
+      color: var(--accent-ink);
+      letter-spacing: 0.01em;
+    }
+
+    .github-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--ink);
+      text-decoration: none;
+      margin-top: 1.75rem;
+      padding: 0.55rem 1rem;
+      background: transparent;
+      border: 1px solid var(--ink);
+      border-radius: 3px;
+      transition: all 0.15s ease;
+    }
+    .github-link:hover { background: var(--ink); color: var(--bg-main); }
+
+    .demo-heading {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-mute);
+      margin-top: 2rem;
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--rule-soft);
+    }
+    .demo-heading:first-child { margin-top: 0; }
+
+    .demo-placeholder {
+      background: var(--bg-card);
+      border: 1px dashed var(--rule);
+      border-radius: 4px;
+      padding: 2rem 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--ink-mute);
+      text-align: center;
+    }
+    .demo-placeholder strong { color: var(--ink-soft); font-weight: 500; }
+
+    .demo-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin: 0.5rem 0 1rem; }
+    .demo-table th {
+      text-align: left;
+      font-family: var(--mono);
+      font-weight: 500;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--ink-faint);
+      color: var(--ink-mute);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .demo-table td {
+      padding: 0.55rem 0.75rem;
+      border-bottom: 1px solid var(--rule-soft);
+      color: var(--ink-soft);
+    }
+    .demo-table code {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      background: var(--accent-tint);
+      color: var(--accent-ink);
+      padding: 0.1rem 0.4rem;
+      border-radius: 2px;
+    }
+
+    .demo-list { list-style: none; padding: 0; }
+    .demo-list > li {
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      padding: 0.4rem 0;
+      padding-left: 1.35rem;
+      position: relative;
+      text-wrap: pretty;
+    }
+    .demo-list > li::before {
+      content: '→';
+      font-family: var(--mono);
+      position: absolute;
+      left: 0;
+      top: 0.45rem;
+      color: var(--accent-ink);
+      font-size: 0.85rem;
+    }
+    .demo-sublist { list-style: none; padding: 0; margin-top: 0.3rem; }
+    .demo-sublist li {
+      font-size: 0.86rem;
+      color: var(--ink-mute);
+      padding: 0.15rem 0 0.15rem 1.15rem;
+      position: relative;
+    }
+    .demo-sublist li::before {
+      content: '·';
+      position: absolute;
+      left: 0.3rem;
+      top: 0.1rem;
+      color: var(--ink-faint);
+    }
+
+    .demo-media-grid { display: grid; gap: 0.75rem; }
+    .demo-media-grid img,
+    .demo-media-grid video {
+      width: 100%;
+      border-radius: 3px;
+      border: 1px solid var(--rule);
+    }
+
+    /* ————— Contact ————— */
+    .contact-intro {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      line-height: 1.45;
+      color: var(--ink-soft);
+      margin-bottom: 2rem;
+      max-width: 560px;
+      text-wrap: pretty;
+    }
+    .contact-links { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--rule); }
+    .contact-link {
+      font-size: 1.05rem;
+      color: var(--ink);
+      text-decoration: none;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      transition: padding 0.2s ease, color 0.2s ease;
+    }
+    .contact-link .method {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--ink-mute);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .contact-link .arrow {
+      color: var(--ink-faint);
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+    .contact-link:hover { color: var(--accent-ink); padding-left: 0.6rem; }
+    .contact-link:hover .arrow { color: var(--accent-ink); transform: translateX(4px); }
+
+    /* ————— Cat ————— */
+    .cat-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+    .cat-svg { flex-shrink: 0; transition: transform 0.3s cubic-bezier(.68,-0.55,.27,1.55); }
+    .cat-wrapper:hover .cat-svg { transform: translateY(-2px) rotate(-4deg); }
+    .cat-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--ink-mute);
+      transition: color 0.2s;
+    }
+    .cat-wrapper:hover .cat-label { color: var(--ink); }
+
+    .cat-bubble {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      margin-bottom: 0.5rem;
+      background: var(--ink);
+      color: var(--bg-main);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .cat-bubble::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 16px;
+      border: 5px solid transparent;
+      border-top-color: var(--ink);
+    }
+    .cat-bubble.show { opacity: 1; transform: translateY(0); }
+
+    /* ————— Responsive ————— */
+    @media (max-width: 900px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 1.25rem 1.5rem;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      .nav-section, .sidebar-meta { display: none; }
+      .sidebar-tag { display: none; }
+      .sidebar-logo { margin-bottom: 0; }
+      .sidebar-footer {
+        flex-direction: row;
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
+        gap: 1rem;
+      }
+      .main { margin-left: 0; }
+      .section, .hero { padding: 3rem 1.5rem; }
+      .hero { padding: 3rem 1.5rem; }
+      .hero-kicker { margin-bottom: 2rem; }
+      .hero-name { font-size: 2.75rem; margin-bottom: 1.75rem; }
+      .hero-statement { font-size: 1.35rem; margin-bottom: 1rem; }
+      .hero-scroll { display: none; }
+      .hero-arc { font-size: 0.7rem; gap: 0.5rem; padding: 0.6rem 0.8rem; }
+      .skills-grid, .project-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+      .project-hero-title { font-size: 1.8rem; }
+    }
+
+    /* fade-in entrance */
+    .fade { opacity: 0; transform: translateY(8px); animation: fadeIn 0.6s cubic-bezier(.2,.7,.2,1) forwards; }
+    @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+    .d1 { animation-delay: 0.08s; } .d2 { animation-delay: 0.16s; } .d3 { animation-delay: 0.24s; }
+    .d4 { animation-delay: 0.32s; } .d5 { animation-delay: 0.40s; }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">Lyuhuan<em>.</em></div>
+    <div class="sidebar-tag">analytics × ai tooling</div>
+
+    <nav class="nav-section" id="main-nav">
+      <div class="nav-label">Index</div>
+      <div class="nav-items">
+        <a href="#hero" class="nav-item active" onclick="goHome('hero'); return false;"><span class="num">01</span>Home</a>
+        <a href="#about" class="nav-item" onclick="goHome('about'); return false;"><span class="num">02</span>About</a>
+        <a href="#projects" class="nav-item" onclick="goHome('projects'); return false;"><span class="num">03</span>Projects</a>
+        <a href="#contact" class="nav-item" onclick="goHome('contact'); return false;"><span class="num">04</span>Contact</a>
+      </div>
+    </nav>
+
+    <nav class="nav-section" id="project-nav" style="display:none;">
+      <div class="nav-items">
+        <a href="#" class="nav-item back" onclick="goBackToProjects(); return false;">← all projects</a>
+      </div>
+      <div class="nav-label" style="margin-top: 1rem;">Case</div>
+      <div class="nav-items" id="project-nav-items"></div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://www.linkedin.com/in/lyuhuan-y" class="sidebar-link" target="_blank">LinkedIn&nbsp;↗</a>
+      <a href="https://github.com/ylh551400" class="sidebar-link" target="_blank">GitHub&nbsp;↗</a>
+
+      <div class="cat-wrapper" id="catEgg" title="click me">
+        <svg class="cat-svg" id="catSvg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <!-- head -->
+          <path d="M6 12 L4 5 L10 9 Q16 7 22 9 L28 5 L26 12 Q29 17 26 22 Q21 27 16 27 Q11 27 6 22 Q3 17 6 12Z" fill="var(--bg-sidebar)"/>
+          <!-- ears inner -->
+          <path d="M6.5 10 L5.5 6.5 L9 9 Z" fill="currentColor" opacity="0.15"/>
+          <path d="M25.5 10 L26.5 6.5 L23 9 Z" fill="currentColor" opacity="0.15"/>
+          <!-- eyes -->
+          <ellipse id="catEyeL" cx="12" cy="16" rx="1.3" ry="1.8" fill="currentColor"/>
+          <ellipse id="catEyeR" cx="20" cy="16" rx="1.3" ry="1.8" fill="currentColor"/>
+          <!-- nose + mouth -->
+          <path d="M15 19 L16 20 L17 19" />
+          <path d="M16 20 L16 21.5" />
+          <path d="M16 21.5 Q14 22.5 13 21.5" />
+          <path d="M16 21.5 Q18 22.5 19 21.5" />
+          <!-- whiskers -->
+          <path d="M10 19 L6 19" opacity="0.5"/>
+          <path d="M10 20 L6.5 20.5" opacity="0.5"/>
+          <path d="M22 19 L26 19" opacity="0.5"/>
+          <path d="M22 20 L25.5 20.5" opacity="0.5"/>
+        </svg>
+        <span class="cat-label">the cat</span>
+        <div class="cat-bubble" id="catBubble">meow — press me again.</div>
+      </div>
+
+      <div class="sidebar-meta">
+        <div><span class="dot"></span>open to work · Toronto</div>
+        <div id="localClock">—</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- ————— Hero ————— -->
+    <section class="section hero" id="hero">
+      <div class="hero-inner">
+        <div class="hero-kicker fade">portfolio · 2026 · toronto</div>
+        <h1 class="hero-name fade d1"><span class="name-breathe">Lyuhuan Yao<em>.</em></span></h1>
+        <p class="hero-statement" id="heroStatement" aria-label="I'm an analyst. I find the story in the data and make it land with the people who need to act on it — faster now, because I build my own AI tooling."></p>
+        <div class="hero-arc fade d4" id="heroArc">
+          <span data-phase="0">4+ yrs in product &amp; ops</span>
+          <span class="arrow">·</span>
+          <span data-phase="1">BI</span>
+          <span class="arrow">·</span>
+          <span data-phase="2">data storytelling</span>
+          <span class="arrow">·</span>
+          <span data-phase="3">workflow automation</span>
+        </div>
+      </div>
+      <div class="hero-scroll fade d5">
+        <span>scroll</span>
+        <span class="line"></span>
+      </div>
+    </section>
+
+    <!-- ————— About ————— -->
+    <section class="section section-alt" id="about">
+      <div class="section-inner">
+        <div class="cell-label">02 · about</div>
+        <p class="about-intro" style="font-size: 22px">
+          I came up through product and education. What carried over wasn't the domain — it was the instinct to ask <em>"what's actually going on here?"</em> before jumping to conclusions.
+        </p>
+        <p class="about-intro" style="font-size: 22px">
+          Now I answer that question as an analyst — with SQL, dashboards, and increasingly, AI tools I build myself when the off-the-shelf ones don't fit.
+        </p>
+
+        <div class="skills-grid">
+          <div class="skills-column">
+            <h3 data-num="A.">How I think</h3>
+            <div class="skill-item">
+              <div class="skill-item-title">Cross-functional communication</div>
+              <div class="skill-item-desc">Translating between technical and business teams.</div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-title">Stakeholder alignment</div>
+              <div class="skill-item-desc">Turning competing priorities into clear action.</div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-title">KPI design &amp; storytelling</div>
+              <div class="skill-item-desc">Define what to measure, then make it land.</div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-title">End-to-end ownership</div>
+              <div class="skill-item-desc">Discovery → delivery, comfortable in the full loop.</div>
+            </div>
+          </div>
+
+          <div class="skills-column">
+            <h3 data-num="B.">How I execute</h3>
+            <div class="skill-item">
+              <div class="skill-item-title">SQL &amp; Python</div>
+              <div class="skill-item-desc">CTEs, window functions, Pandas, NumPy.</div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-title">Power BI &amp; dashboards</div>
+              <div class="skill-item-desc">DAX, data modeling, interactive reporting.</div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-title">LLMs &amp; AI tooling</div>
+              <div class="skill-item-desc">Claude API, RAG architecture, prompts that behave.</div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-title">Workflow automation</div>
+              <div class="skill-item-desc">ETL pipelines, Make, API integrations.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ————— Projects ————— -->
+    <section class="section" id="projects">
+      <div class="section-wide">
+        <div class="cell-label">03 · projects</div>
+        <div class="projects-header">
+          <h2 class="section-title" style="font-size: 28px">Four problems. Four different tools. <em style="font-size: 30px"><br>Same instinct: find the friction, build the fix</em>.</h2>
+          <div class="projects-count">04 / 04 live</div>
+        </div>
+
+        <div class="project-grid">
+          <!-- agent -->
+          <a class="project-card" onclick="showProject('agent')">
+            <div class="project-thumb">
+              <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <rect width="320" height="180" fill="var(--bg-card)"/>
+                <defs>
+                  <marker id="ag-arr" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto">
+                    <path d="M0 0 L6 3 L0 6 Z" fill="var(--accent)"/>
+                  </marker>
+                  <marker id="ag-arr-dash" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto">
+                    <path d="M0 0 L6 3 L0 6 Z" fill="var(--accent-ink)" fill-opacity="0.7"/>
+                  </marker>
+                </defs>
+
+                <!-- forward edges: prompt → main -->
+                <g stroke="var(--accent)" stroke-width="1.1" fill="none" opacity="0.55">
+                  <line x1="26" y1="90" x2="52" y2="90" marker-end="url(#ag-arr)"/>
+                  <!-- main → 3 sub-agents -->
+                  <line x1="78" y1="90" x2="122" y2="42" marker-end="url(#ag-arr)"/>
+                  <line x1="78" y1="90" x2="122" y2="90" marker-end="url(#ag-arr)"/>
+                  <line x1="78" y1="90" x2="122" y2="138" marker-end="url(#ag-arr)"/>
+                  <!-- 3 sub-agents → merge -->
+                  <line x1="152" y1="42" x2="186" y2="86" marker-end="url(#ag-arr)"/>
+                  <line x1="152" y1="90" x2="186" y2="90" marker-end="url(#ag-arr)"/>
+                  <line x1="152" y1="138" x2="186" y2="94" marker-end="url(#ag-arr)"/>
+                  <!-- merge → evaluator -->
+                  <line x1="216" y1="90" x2="234" y2="90" marker-end="url(#ag-arr)"/>
+                  <!-- evaluator → final -->
+                  <line x1="262" y1="90" x2="280" y2="90" marker-end="url(#ag-arr)"/>
+                </g>
+
+                <!-- feedback loop: evaluator → sub-agents (dashed, curves up and back) -->
+                <path d="M 248 76 C 248 30, 160 10, 137 32"
+                      stroke="var(--accent-ink)" stroke-opacity="0.7"
+                      stroke-width="1.1" fill="none"
+                      stroke-dasharray="3 3"
+                      marker-end="url(#ag-arr-dash)"/>
+                <text x="178" y="22" font-family="JetBrains Mono" font-size="7" fill="var(--accent-ink)" opacity="0.8">reject → retry</text>
+
+                <!-- nodes: prompt (small dot) -->
+                <circle cx="18" cy="90" r="4" fill="var(--ink-mute)"/>
+
+                <!-- main agent (filled square) -->
+                <rect x="54" y="82" width="22" height="16" rx="2"
+                      fill="var(--accent)"/>
+
+                <!-- 3 sub-agent nodes (hollow circles) -->
+                <g fill="var(--bg-card)" stroke="var(--accent)" stroke-width="1.5">
+                  <circle cx="136" cy="42" r="7"/>
+                  <circle cx="136" cy="90" r="7"/>
+                  <circle cx="136" cy="138" r="7"/>
+                </g>
+
+                <!-- merge (diamond) -->
+                <path d="M 200 80 L 212 90 L 200 100 L 188 90 Z"
+                      fill="var(--bg-card)" stroke="var(--accent)" stroke-width="1.5"/>
+
+                <!-- evaluator (double-stroke circle) -->
+                <circle cx="248" cy="90" r="10" fill="var(--bg-card)" stroke="var(--accent)" stroke-width="1.5"/>
+                <circle cx="248" cy="90" r="6"  fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.6"/>
+
+                <!-- final (filled dot, larger) -->
+                <circle cx="290" cy="90" r="6" fill="var(--accent)"/>
+
+                <!-- labels -->
+                <g font-family="JetBrains Mono" font-size="6.5" fill="var(--ink-mute)">
+                  <text x="4"   y="108" text-anchor="start">prompt</text>
+                  <text x="65"  y="115" text-anchor="middle">main</text>
+                  <text x="150" y="42"  text-anchor="start">sub.1</text>
+                  <text x="150" y="93"  text-anchor="start">sub.2</text>
+                  <text x="150" y="141" text-anchor="start">sub.3</text>
+                  <text x="200" y="115" text-anchor="middle">merge</text>
+                  <text x="248" y="115" text-anchor="middle">eval</text>
+                  <text x="290" y="115" text-anchor="middle" fill="var(--accent-ink)">final</text>
+                </g>
+              </svg>
+            </div>
+            <div class="project-card-body">
+              <span class="project-card-label">01 · ai agent</span>
+              <div class="project-card-title">Competitive Analysis Agent</div>
+              <div class="project-card-desc">Multi-agent tool that automates market research — prompt in, structured report out.</div>
+              <div class="project-card-footer">
+                <span>15 min · 4 hr saved</span>
+                <span class="arrow">→</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- tinder -->
+          <a class="project-card" onclick="showProject('tinder')">
+            <div class="project-thumb">
+              <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <rect width="320" height="180" fill="var(--bg-card)"/>
+
+                <defs>
+                  <marker id="arrTinder" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0 0 L6 3 L0 6 Z" fill="var(--accent)"/>
+                  </marker>
+                </defs>
+
+                <!-- review "data cloud": cluster of dots fading into the bot -->
+                <g fill="var(--accent)" fill-opacity="0.35">
+                  <circle cx="24"  cy="38"  r="1.6"/>
+                  <circle cx="34"  cy="52"  r="1.2"/>
+                  <circle cx="46"  cy="32"  r="1.8"/>
+                  <circle cx="20"  cy="60"  r="1.4"/>
+                  <circle cx="38"  cy="68"  r="1.6"/>
+                  <circle cx="54"  cy="46"  r="1.2"/>
+                  <circle cx="60"  cy="60"  r="1.4"/>
+                  <circle cx="28"  cy="78"  r="1.2"/>
+                  <circle cx="48"  cy="82"  r="1.6"/>
+                  <circle cx="66"  cy="72"  r="1.2"/>
+                </g>
+                <text x="18" y="24" font-family="JetBrains Mono" font-size="7"
+                      fill="var(--ink-mute)" letter-spacing="0.06em">24,014 reviews</text>
+
+                <!-- Step 1: question bubble (bottom-left) -->
+                <g transform="translate(10 110)">
+                  <rect x="0" y="0" width="70" height="30" rx="14"
+                        fill="none" stroke="var(--ink)" stroke-opacity="0.4" stroke-width="1"/>
+                  <!-- tail -->
+                  <path d="M18 30 L14 38 L26 30 Z" fill="none" stroke="var(--ink)" stroke-opacity="0.4" stroke-width="1"/>
+                  <text x="35" y="20" text-anchor="middle"
+                        font-family="JetBrains Mono" font-size="10"
+                        fill="var(--ink-soft)">ask ?</text>
+                </g>
+
+                <!-- arrow: question → bot -->
+                <path d="M82 122 C 110 122, 120 100, 132 92"
+                      fill="none" stroke="var(--accent)" stroke-width="1.2"
+                      marker-end="url(#arrTinder)"/>
+
+                <!-- Step 2: AI bot icon (center) -->
+                <g transform="translate(140 50)">
+                  <!-- antenna -->
+                  <line x1="20" y1="0" x2="20" y2="10"
+                        stroke="var(--accent)" stroke-width="1.4"/>
+                  <circle cx="20" cy="-2" r="2.5" fill="var(--accent)"/>
+                  <!-- head -->
+                  <rect x="2" y="10" width="36" height="34" rx="6"
+                        fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.4"/>
+                  <!-- eyes -->
+                  <circle cx="13" cy="24" r="2.4" fill="var(--accent-ink)"/>
+                  <circle cx="27" cy="24" r="2.4" fill="var(--accent-ink)"/>
+                  <!-- mouth / speaker grille -->
+                  <line x1="11" y1="34" x2="29" y2="34"
+                        stroke="var(--accent-ink)" stroke-width="1.2" stroke-linecap="round"/>
+                  <!-- side "ears" / processors -->
+                  <rect x="-3" y="20" width="5" height="10" rx="1" fill="var(--accent)"/>
+                  <rect x="38" y="20" width="5" height="10" rx="1" fill="var(--accent)"/>
+                </g>
+
+                <!-- arrow: bot → report -->
+                <path d="M188 70 L 212 70"
+                      fill="none" stroke="var(--accent)" stroke-width="1.2"
+                      marker-end="url(#arrTinder)"/>
+
+                <!-- Step 3: report document -->
+                <g transform="translate(218 44)">
+                  <rect x="0" y="0" width="54" height="68" rx="2"
+                        fill="var(--bg-main)" stroke="var(--ink)" stroke-opacity="0.5" stroke-width="1"/>
+                  <!-- folded corner -->
+                  <path d="M42 0 L54 12 L42 12 Z"
+                        fill="var(--bg-card)" stroke="var(--ink)" stroke-opacity="0.5" stroke-width="1"/>
+                  <!-- report lines -->
+                  <g stroke="var(--ink)" stroke-opacity="0.35" stroke-width="1">
+                    <line x1="8"  y1="22" x2="46" y2="22"/>
+                    <line x1="8"  y1="30" x2="42" y2="30"/>
+                    <line x1="8"  y1="38" x2="46" y2="38"/>
+                    <line x1="8"  y1="46" x2="38" y2="46"/>
+                  </g>
+                  <!-- highlighted finding bar -->
+                  <rect x="8" y="54" width="28" height="6" fill="var(--accent)" opacity="0.7"/>
+                </g>
+
+                <!-- loop-back arrow: report → follow-up question -->
+                <path d="M248 120 C 248 146, 180 150, 132 144"
+                      fill="none" stroke="var(--ink)" stroke-opacity="0.35"
+                      stroke-width="1" stroke-dasharray="3 3"
+                      marker-end="url(#arrTinder)"/>
+
+                <!-- Step 4: follow-up question bubble -->
+                <g transform="translate(100 130)">
+                  <rect x="0" y="0" width="36" height="24" rx="11"
+                        fill="none" stroke="var(--ink)" stroke-opacity="0.35" stroke-width="1"/>
+                  <text x="18" y="16" text-anchor="middle"
+                        font-family="JetBrains Mono" font-size="9"
+                        fill="var(--ink-mute)">↵ ?</text>
+                </g>
+
+                <!-- step numbers, subtle -->
+                <g font-family="JetBrains Mono" font-size="6" fill="var(--ink-faint)"
+                   letter-spacing="0.1em">
+                  <text x="30"  y="106">01</text>
+                  <text x="156" y="105">02</text>
+                  <text x="244" y="124">03</text>
+                  <text x="118" y="162">↻</text>
+                </g>
+              </svg>
+            </div>
+            <div class="project-card-body">
+              <span class="project-card-label">02 · rag + llm</span>
+              <div class="project-card-title">AI Product Insights — Tinder</div>
+              <div class="project-card-desc">24K reviews made queryable. 40 hrs of reading collapsed to 30 minutes.</div>
+              <div class="project-card-footer">
+                <span>24,014 reviews</span>
+                <span class="arrow">→</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- etl -->
+          <a class="project-card" onclick="showProject('etl')">
+            <div class="project-thumb">
+              <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <rect width="320" height="180" fill="var(--bg-card)"/>
+                <!-- pipeline boxes: extract → clean → check → load -->
+                <g stroke="var(--accent)" stroke-width="1.2" fill="var(--accent-tint)">
+                  <rect x="14"  y="75" width="44" height="30" rx="2"/>
+                  <rect x="78"  y="75" width="44" height="30" rx="2"/>
+                  <rect x="142" y="75" width="44" height="30" rx="2"/>
+                  <rect x="206" y="75" width="44" height="30" rx="2"/>
+                </g>
+                <!-- arrows between boxes, and one pointing at the envelope -->
+                <g stroke="var(--accent)" stroke-width="1.2" fill="none">
+                  <path d="M58  90 L78  90"  marker-end="url(#arr)"/>
+                  <path d="M122 90 L142 90"  marker-end="url(#arr)"/>
+                  <path d="M186 90 L206 90"  marker-end="url(#arr)"/>
+                  <path d="M250 90 L274 90"  marker-end="url(#arr)"/>
+                </g>
+                <defs>
+                  <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0 0 L6 3 L0 6 Z" fill="var(--accent)"/>
+                  </marker>
+                </defs>
+                <!-- step labels -->
+                <g font-family="JetBrains Mono" font-size="8" fill="var(--accent-ink)" text-anchor="middle">
+                  <text x="36"  y="94">extract</text>
+                  <text x="100" y="94">clean</text>
+                  <text x="164" y="94">check</text>
+                  <text x="228" y="94">load</text>
+                </g>
+                <!-- envelope icon as the final "mail" step -->
+                <g transform="translate(276 78)" stroke="var(--accent)" stroke-width="1.2" fill="var(--accent-tint)">
+                  <rect x="0" y="0" width="26" height="18" rx="1.5"/>
+                  <path d="M0 2 L13 12 L26 2" fill="none"/>
+                </g>
+                <!-- ticking schedule -->
+                <g font-family="JetBrains Mono" font-size="7" fill="var(--ink-mute)">
+                  <text x="20" y="35">cron: 0 6 * * *</text>
+                  <text x="20" y="48">status: ✓ 47 runs</text>
+                </g>
+                <text x="20" y="140" font-family="JetBrains Mono" font-size="7" fill="var(--ink-mute)">daily report → inbox, 06:04 am</text>
+              </svg>
+            </div>
+            <div class="project-card-body">
+              <span class="project-card-label">03 · pipeline</span>
+              <div class="project-card-title">Automated ETL Workflow</div>
+              <div class="project-card-desc">Daily pull, clean, validate, load, alert. Runs before your morning coffee.</div>
+              <div class="project-card-footer">
+                <span>python · sqlite · make</span>
+                <span class="arrow">→</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- airbnb -->
+          <a class="project-card" onclick="showProject('airbnb')">
+            <div class="project-thumb">
+              <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <rect width="320" height="180" fill="var(--bg-card)"/>
+                <!-- KPI cards row -->
+                <g stroke="var(--rule)" stroke-width="1" fill="var(--bg-main)">
+                  <rect x="20" y="20" width="85" height="38" rx="2"/>
+                  <rect x="117" y="20" width="85" height="38" rx="2"/>
+                  <rect x="214" y="20" width="85" height="38" rx="2"/>
+                </g>
+                <g font-family="JetBrains Mono" font-size="7" fill="var(--ink-mute)">
+                  <text x="27" y="33">listings</text>
+                  <text x="124" y="33">avg price</text>
+                  <text x="221" y="33">occupancy</text>
+                </g>
+                <g font-family="Fraunces" font-size="14" font-weight="500" fill="var(--ink)">
+                  <text x="27" y="52">40,128</text>
+                  <text x="124" y="52">$186</text>
+                  <text x="221" y="52">62%</text>
+                </g>
+                <!-- map-ish blob + chart -->
+                <g stroke="var(--accent)" stroke-width="1" fill="var(--accent-tint)" opacity="0.9">
+                  <path d="M30 90 Q60 75 95 90 T160 95 Q180 120 150 140 Q110 155 70 145 Q25 135 30 90 Z"/>
+                </g>
+                <g fill="var(--accent-ink)">
+                  <circle cx="55" cy="110" r="2"/><circle cx="85" cy="125" r="2"/>
+                  <circle cx="115" cy="105" r="2"/><circle cx="140" cy="130" r="2"/>
+                </g>
+                <!-- trend -->
+                <g stroke="var(--accent)" stroke-width="1.5" fill="none">
+                  <path d="M190 140 L210 125 L230 130 L250 110 L270 105 L290 85"/>
+                </g>
+                <g fill="var(--accent)">
+                  <circle cx="190" cy="140" r="2"/><circle cx="210" cy="125" r="2"/>
+                  <circle cx="230" cy="130" r="2"/><circle cx="250" cy="110" r="2"/>
+                  <circle cx="270" cy="105" r="2"/><circle cx="290" cy="85" r="2"/>
+                </g>
+                <text x="190" y="160" font-family="JetBrains Mono" font-size="6" fill="var(--ink-mute)">seasonality →</text>
+              </svg>
+            </div>
+            <div class="project-card-body">
+              <span class="project-card-label">04 · bi &amp; analytics</span>
+              <div class="project-card-title">Airbnb Toronto BI Solution</div>
+              <div class="project-card-desc">40K listings, cleaned and modeled — pricing, satisfaction, neighborhood trends.</div>
+              <div class="project-card-footer">
+                <span>power bi · dax</span>
+                <span class="arrow">→</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ————— Project Details ————— -->
+    <section class="section project-section" id="project-agent" data-project="agent">
+      <div class="project-detail-inner">
+        <div class="project-hero-label">01 · ai agent</div>
+        <h2 class="project-hero-title">Competitive<br>Analysis Agent<em>.</em></h2>
+
+        <div class="project-tabs">
+          <button class="project-tab active" onclick="switchTab(event, 'agent', 'overview')">overview</button>
+          <button class="project-tab" onclick="switchTab(event, 'agent', 'demo')">demo</button>
+        </div>
+
+        <div class="project-tab-content active" id="agent-overview">
+          <p class="section-text">
+            Writing competitive reports is tedious and slow. So I built a multi-agent system: give it a company name, get a structured report in 15 minutes — instead of 4–6 hours. Like a junior marketing analyst, but it doesn't get tired.
+          </p>
+          <div class="tech-tags">
+            <span class="tag">Claude Agent SDK</span>
+            <span class="tag">Python</span>
+            <span class="tag">Multi-agent orchestration</span>
+          </div>
+          <a href="https://github.com/ylh551400/Competitive-Analysis-Agent" class="github-link" target="_blank">view on github ↗</a>
+        </div>
+
+        <div class="project-tab-content" id="agent-demo">
+          <div class="demo-heading">test run</div>
+          <p class="section-text" style="margin-bottom:1rem;">
+            Prompt: <em>"We're a SaaS company. Is it worth entering the project management market against Asana, Monday.com, and ClickUp?"</em>
+          </p>
+
+          <div class="demo-heading">output files</div>
+          <table class="demo-table">
+            <thead><tr><th>File</th><th>Size</th><th>Contents</th></tr></thead>
+            <tbody>
+              <tr><td><code>outputs/report.md</code></td><td>393 lines / 37 KB</td><td>Complete competitive analysis report</td></tr>
+              <tr><td><code>logs/execution_log.md</code></td><td>78 lines</td><td>Execution log</td></tr>
+              <tr><td><code>research_notes/</code></td><td>14 files</td><td>Raw research data from each subagent</td></tr>
+            </tbody>
+          </table>
+
+          <div class="demo-heading">report quality highlights</div>
+          <ul class="demo-list">
+            <li><strong>Executive Summary</strong> directly answers the "worth entering?" question — <em>"Conditional Go — differentiated positioning required"</em></li>
+            <li>Three competitors each covered across 6 dimensions: pricing, customers, features, user reviews, news, hiring</li>
+            <li>Pricing tables include specific figures (e.g. Asana Starter $10.99/month), not vague descriptions</li>
+            <li>Cites specific G2 / Capterra ratings and review counts</li>
+            <li><strong>Recommendations</strong> section provides 3 concrete market-entry directions</li>
+            <li><strong>Information Limitations</strong> section honestly flags constrained data points</li>
+          </ul>
+
+          <a href="https://github.com/ylh551400/Competitive-Analysis-Agent/blob/main/outputs/report.md" class="github-link" target="_blank" style="margin-top:1.5rem;">read the full generated report ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section project-section" id="project-tinder" data-project="tinder">
+      <div class="project-detail-inner">
+        <div class="project-hero-label">02 · rag + llm</div>
+        <h2 class="project-hero-title">AI Product<br>Insights — Tinder<em>.</em></h2>
+
+        <div class="project-tabs">
+          <button class="project-tab active" onclick="switchTab(event, 'tinder', 'overview')">overview</button>
+          <button class="project-tab" onclick="switchTab(event, 'tinder', 'demo')">demo</button>
+        </div>
+
+        <div class="project-tab-content active" id="tinder-overview">
+          <p class="section-text">
+            PMs wanted to know what users were complaining about, but no one wants to read 24,000 reviews. I built a RAG system that lets them ask questions in plain English. 30 minutes instead of 40 hours. Verdict: <em>53% of negative reviews traced back to aggressive monetization.</em>
+          </p>
+          <div class="tech-tags">
+            <span class="tag">Python</span><span class="tag">Claude API</span>
+            <span class="tag">Vector DB</span><span class="tag">Streamlit</span>
+          </div>
+          <a href="https://github.com/ylh551400/product-insights-rag-llm" class="github-link" target="_blank">view on github ↗</a>
+        </div>
+
+        <div class="project-tab-content" id="tinder-demo">
+          <div class="demo-heading">how it works</div>
+          <div class="demo-media-grid" style="margin-bottom:1.5rem;">
+            <video controls>
+              <source src="tinder_demo/videos/tinder_demo.mp4" type="video/mp4">
+              <div class="demo-placeholder"><strong>demo video</strong><br>drop tinder_demo/videos/tinder_demo.mp4 here</div>
+            </video>
+          </div>
+
+          <div class="demo-heading">key features</div>
+          <ul class="demo-list">
+            <li>Ask questions in natural language — no coding required</li>
+            <li>Optimized for last 12 months of reviews to keep insights relevant</li>
+            <li>LLM-based product analysis
+              <ul class="demo-sublist">
+                <li>Complaint theme extraction</li>
+                <li>Root cause identification</li>
+                <li>Product recommendations with evidence citations</li>
+              </ul>
+            </li>
+          </ul>
+          <p class="section-text" style="margin-top:1.25rem; font-size:0.84rem; color:var(--ink-mute);">
+            Note: Demo samples 15 relevant reviews for quick illustration. Sample size is configurable in production.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section project-section" id="project-etl" data-project="etl">
+      <div class="project-detail-inner">
+        <div class="project-hero-label">03 · data pipeline</div>
+        <h2 class="project-hero-title">Automated<br>ETL Workflow<em>.</em></h2>
+
+        <div class="project-tabs">
+          <button class="project-tab active" onclick="switchTab(event, 'etl', 'overview')">overview</button>
+          <button class="project-tab" onclick="switchTab(event, 'etl', 'demo')">demo</button>
+        </div>
+
+        <div class="project-tab-content active" id="etl-overview">
+          <p class="section-text">
+            A junior data analyst's daily grind: pull data, clean it, validate it, load it into a database, flag anything weird. I automated the whole loop — now it runs daily, checks itself, and emails me if something's off.
+          </p>
+          <div class="tech-tags">
+            <span class="tag">Python</span><span class="tag">SQLite</span>
+            <span class="tag">Make</span><span class="tag">ETL</span>
+          </div>
+          <a href="https://github.com/ylh551400/automated-data-workflow" class="github-link" target="_blank">view on github ↗</a>
+        </div>
+
+        <div class="project-tab-content" id="etl-demo">
+          <div class="demo-heading">pipeline architecture</div>
+          <div class="demo-media-grid" style="margin-bottom:1.5rem;">
+            <img src="ETL_pipeline_demo/screenshots/architecture.png" alt="ETL pipeline architecture" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'demo-placeholder',innerHTML:'<strong>architecture diagram</strong><br>ETL_pipeline_demo/screenshots/architecture.png'}))">
+          </div>
+
+          <div class="demo-heading">daily report preview</div>
+          <p class="section-text" style="margin-bottom:1rem;">
+            The pipeline emails a daily summary — quality scores, row counts, anomaly flags. If anything is off, you know before your morning coffee.
+          </p>
+          <div class="demo-media-grid">
+            <img src="ETL_pipeline_demo/screenshots/report_demo.jpeg" alt="Daily report preview" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'demo-placeholder',innerHTML:'<strong>daily report</strong><br>ETL_pipeline_demo/screenshots/report_demo.jpeg'}))">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section project-section" id="project-airbnb" data-project="airbnb">
+      <div class="project-detail-inner">
+        <div class="project-hero-label">04 · bi &amp; analytics</div>
+        <h2 class="project-hero-title">Airbnb Toronto<br>BI Solution<em>.</em></h2>
+
+        <div class="project-tabs">
+          <button class="project-tab active" onclick="switchTab(event, 'airbnb', 'overview')">overview</button>
+          <button class="project-tab" onclick="switchTab(event, 'airbnb', 'demo')">demo</button>
+        </div>
+
+        <div class="project-tab-content active" id="airbnb-overview">
+          <p class="section-text">
+            Hosts want to know: <em>where should I list? How should I price? What makes guests happy?</em> I took 40K+ listings, cleaned the mess, and built dashboards that answer those questions — by neighborhood, by season, by property type.
+          </p>
+          <div class="tech-tags">
+            <span class="tag">Python</span><span class="tag">Power BI</span>
+            <span class="tag">DAX</span><span class="tag">Data Modeling</span>
+          </div>
+        </div>
+
+        <div class="project-tab-content" id="airbnb-demo">
+          <div class="demo-heading">business questions answered</div>
+          <ul class="demo-list">
+            <li>What property features correlate most strongly with high guest satisfaction and booking rate?</li>
+            <li>What are the monthly and quarterly trends in pricing and occupancy?</li>
+            <li>Which neighborhoods are hottest, most competitive, and highest rated?</li>
+          </ul>
+
+          <div class="demo-heading">features</div>
+          <ul class="demo-list">
+            <li>Interactive dashboards with KPI cards and global filters</li>
+            <li>Drill down by neighborhood, season, and property type</li>
+          </ul>
+
+          <div class="demo-heading">dashboard preview</div>
+          <div class="demo-media-grid">
+            <img src="airbnb_solution_demo/screenshots/Screenshot 2026-03-19 182509.png" alt="Airbnb dashboard overview" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'demo-placeholder',innerHTML:'<strong>dashboard 1/3</strong><br>airbnb_solution_demo/screenshots/'}))">
+            <img src="airbnb_solution_demo/screenshots/Screenshot 2026-03-19 182531.png" alt="Airbnb dashboard detail" onerror="this.remove()">
+            <img src="airbnb_solution_demo/screenshots/Screenshot 2026-03-19 182612.png" alt="Airbnb dashboard trends" onerror="this.remove()">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ————— Contact ————— -->
+    <section class="section section-alt" id="contact">
+      <div class="section-inner">
+        <div class="cell-label">04 · contact</div>
+        <h2 class="section-title">Say hi. I reply <em>same day</em>.</h2>
+        <p class="contact-intro">
+          Open to full-time analytics, AI tooling, and data-product roles in Toronto or remote-friendly.
+        </p>
+        <div class="contact-links">
+          <a href="mailto:yaolvhuan0627@gmail.com" class="contact-link">
+            <span>yaolvhuan0627@gmail.com</span>
+            <span class="method">email · fastest</span>
+          </a>
+          <a href="https://www.linkedin.com/in/lyuhuan-y" class="contact-link" target="_blank">
+            <span>linkedin.com/in/lyuhuan-y</span>
+            <span class="method">linkedin ↗</span>
+          </a>
+          <a href="https://github.com/ylh551400" class="contact-link" target="_blank">
+            <span>github.com/ylh551400</span>
+            <span class="method">code ↗</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ————— Navigation ————— */
+const mainNav = document.getElementById('main-nav');
+const projectNav = document.getElementById('project-nav');
+const projectNavItems = document.getElementById('project-nav-items');
+let currentView = 'home';
+
+const projectData = {
+  agent:  { name: 'Competitive Analysis Agent' },
+  tinder: { name: 'AI Product Insights — Tinder' },
+  etl:    { name: 'Automated ETL Workflow' },
+  airbnb: { name: 'Airbnb Toronto BI Solution' }
+};
+
+function goHome(scrollTo) {
+  currentView = 'home';
+  document.querySelectorAll('.project-section').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
+  document.querySelectorAll('#hero, #about, #projects, #contact').forEach(s => { s.style.display = ''; });
+  mainNav.style.display = 'block'; projectNav.style.display = 'none';
+  if (scrollTo) {
+    const t = document.getElementById(scrollTo);
+    if (t) setTimeout(() => t.scrollIntoView({ behavior: 'smooth' }), 50);
+  }
+}
+function goBackToProjects() {
+  goHome();
+  setTimeout(() => { const p = document.getElementById('projects'); if (p) p.scrollIntoView({ behavior: 'smooth' }); }, 50);
+}
+function showProject(id) {
+  currentView = 'project';
+  document.querySelectorAll('#hero, #about, #projects, #contact').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.project-section').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
+  const target = document.getElementById('project-' + id);
+  if (target) { target.classList.add('active'); target.style.display = 'flex'; }
+  mainNav.style.display = 'none'; projectNav.style.display = 'block';
+  projectNavItems.innerHTML = `<a href="#project-${id}" class="nav-item active"><span class="num">0${Object.keys(projectData).indexOf(id) + 1}</span>${projectData[id].name}</a>`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function switchTab(ev, projectId, tabName) {
+  const section = document.getElementById('project-' + projectId);
+  if (!section) return;
+  section.querySelectorAll('.project-tab').forEach(t => t.classList.remove('active'));
+  ev.currentTarget.classList.add('active');
+  section.querySelectorAll('.project-tab-content').forEach(c => c.classList.remove('active'));
+  const target = document.getElementById(projectId + '-' + tabName);
+  if (target) target.classList.add('active');
+}
+
+/* nav highlight on scroll */
+function updateNav() {
+  if (currentView !== 'home') return;
+  const items = document.querySelectorAll('#main-nav .nav-item');
+  let current = '';
+  document.querySelectorAll('#hero, #about, #projects, #contact').forEach(s => {
+    const r = s.getBoundingClientRect();
+    if (r.top <= window.innerHeight / 2 && r.bottom >= window.innerHeight / 2) current = s.id;
+  });
+  items.forEach(i => {
+    const h = i.getAttribute('href');
+    if (h && h.slice(1) === current) i.classList.add('active'); else i.classList.remove('active');
+  });
+}
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    window.requestAnimationFrame(() => { updateNav(); ticking = false; });
+    ticking = true;
+  }
+});
+
+/* ————— Hero: word-by-word reveal ————— */
+(function heroAnim() {
+  const el = document.getElementById('heroStatement');
+  if (!el) return;
+
+  const segs = [
+    { text: "I'm an analyst." },
+    { br: true },
+    { text: 'I find the story in the data and make it land' },
+    { br: true },
+    { text: 'with the people who need to act on it —' },
+    { br: true },
+    { text: 'faster now, ', em: true },
+    { text: 'because I build my own AI tooling.' }
+  ];
+
+  const words = [];
+  segs.forEach(seg => {
+    if (seg.br) { el.appendChild(document.createElement('br')); return; }
+    const parts = seg.text.split(/(\s+)/);
+    parts.forEach(p => {
+      if (!p) return;
+      if (/^\s+$/.test(p)) { el.appendChild(document.createTextNode(p)); return; }
+      const span = document.createElement(seg.em ? 'em' : 'span');
+      span.className = 'word';
+      span.textContent = p;
+      el.appendChild(span);
+      words.push(span);
+    });
+  });
+  words.forEach((w, i) => { w.style.animationDelay = (0.45 + i * 0.08) + 's'; });
+})();
+
+/* Arc sequence pulse */
+(function arcPulse() {
+  const arc = document.getElementById('heroArc');
+  if (!arc) return;
+  const phases = arc.querySelectorAll('[data-phase]');
+  const arrows = arc.querySelectorAll('.arrow');
+  let i = 0;
+  function tick() {
+    phases.forEach((p, idx) => p.classList.toggle('lit', idx === i));
+    arrows.forEach((a, idx) => a.classList.toggle('lit', idx === i - 1 || (i === 0 && idx === arrows.length - 1) === false && idx < i));
+    i = (i + 1) % phases.length;
+  }
+  tick();
+  setInterval(tick, 1600);
+})();
+
+/* ————— Local clock ————— */
+function updateClock() {
+  const now = new Date();
+  const t = now.toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit', hour12: false });
+  document.getElementById('localClock').textContent = `${t} · updated 2026·04`;
+}
+updateClock(); setInterval(updateClock, 30000);
+
+/* ————— Cat: blink + interact ————— */
+const eyeL = document.getElementById('catEyeL');
+const eyeR = document.getElementById('catEyeR');
+const catEgg = document.getElementById('catEgg');
+const catBubble = document.getElementById('catBubble');
+const catSvg = document.getElementById('catSvg');
+
+function blink() {
+  if (!eyeL) return;
+  eyeL.setAttribute('ry', '0.1'); eyeR.setAttribute('ry', '0.1');
+  setTimeout(() => { eyeL.setAttribute('ry', '1.8'); eyeR.setAttribute('ry', '1.8'); }, 120);
+}
+setInterval(() => { if (Math.random() > 0.3) blink(); }, 4200);
+
+document.addEventListener('mousemove', (e) => {
+  if (!catSvg) return;
+  const rect = catSvg.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+  const dx = Math.max(-1, Math.min(1, (e.clientX - cx) / 300));
+  const dy = Math.max(-1, Math.min(1, (e.clientY - cy) / 300));
+  eyeL.setAttribute('cx', 12 + dx * 0.6);
+  eyeL.setAttribute('cy', 16 + dy * 0.6);
+  eyeR.setAttribute('cx', 20 + dx * 0.6);
+  eyeR.setAttribute('cy', 16 + dy * 0.6);
+});
+
+const quips = [
+  'meow — press me again.',
+  'purr. code compiles.',
+  "you're on slide 3 of 4.",
+  'lyuhuan is probably in SQL.',
+  'I nap on the keyboard 🐾',
+  'spicy dashboards ahead.',
+  'hire her already.'
+];
+let quipIdx = 0;
+catEgg.addEventListener('click', (e) => {
+  e.stopPropagation();
+  quipIdx = (quipIdx + 1) % quips.length;
+  catBubble.textContent = quips[quipIdx];
+  catBubble.classList.add('show');
+  blink();
+  clearTimeout(window.__catTimer);
+  window.__catTimer = setTimeout(() => catBubble.classList.remove('show'), 2400);
+});
+
+/* Init */
+goHome();
+updateNav();
+</script>
+</body>
+</html>
