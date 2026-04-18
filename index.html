@@ -13,7 +13,7 @@
     :root {
       /* Slate palette (default) */
       --bg-main: #eceef0;
-      --bg-alt: #dfe2e6;
+      --bg-alt: #f5f7fa;
       --bg-sidebar: #e2e5e9;
       --bg-card: #f6f7f8;
 
@@ -384,6 +384,284 @@
       color: var(--ink-mute);
       line-height: 1.5;
     }
+
+    /* ————— About Q&A Console ————— */
+    .about-kicker {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .about-kicker h2 {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      max-width: 580px;
+    }
+    .about-kicker h2 .accent { color: var(--accent-ink); font-style: italic; }
+
+    .about-stats { display: flex; gap: 2rem; flex-shrink: 0; }
+    .about-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 0.15rem; }
+    .about-stat .v {
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      color: var(--ink);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    .about-stat span:last-child {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      color: var(--ink-mute);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .qa-console {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      background: var(--bg-card);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      overflow: hidden;
+      min-height: 500px;
+      margin-bottom: 3rem;
+    }
+    .qa-index {
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--rule);
+      display: flex;
+      flex-direction: column;
+    }
+    .qa-index-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.9rem;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+    }
+    .qa-count-badge {
+      font-size: 0.58rem;
+      color: var(--ink-faint);
+      padding: 1px 6px;
+      background: var(--bg-main);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+    }
+    .qa-search {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.55rem 0.9rem;
+      border-bottom: 1px solid var(--rule);
+      color: var(--ink-mute);
+    }
+    .qa-search svg { width: 12px; height: 12px; flex: none; }
+    .qa-search input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--ink);
+      padding: 0.15rem 0;
+    }
+    .qa-search input::placeholder { color: var(--ink-faint); }
+    .qa-search kbd {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      padding: 1px 5px;
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      color: var(--ink-faint);
+      background: var(--bg-main);
+    }
+    .qa-q-list { flex: 1; overflow-y: auto; padding: 0.35rem 0; }
+    .qa-q-item {
+      display: grid;
+      grid-template-columns: 1.6rem 1fr auto;
+      gap: 0.45rem;
+      align-items: baseline;
+      padding: 0.55rem 0.9rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      line-height: 1.35;
+      border-left: 2px solid transparent;
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+    }
+    .qa-q-item .qa-num { font-family: var(--mono); font-size: 0.62rem; color: var(--ink-faint); letter-spacing: 0.05em; }
+    .qa-q-item .qa-arrow { opacity: 0; font-family: var(--mono); font-size: 0.7rem; color: var(--accent-ink); transition: opacity 0.12s ease; }
+    .qa-q-item:hover { background: rgba(23,21,18,0.03); color: var(--ink); }
+    .qa-q-item:hover .qa-arrow { opacity: 0.5; }
+    .qa-q-item.active { background: var(--bg-card); color: var(--ink); border-left-color: var(--accent); font-weight: 500; }
+    .qa-q-item.active .qa-num { color: var(--accent-ink); }
+    .qa-q-item.active .qa-arrow { opacity: 1; }
+
+    .qa-index-footer {
+      padding: 0.55rem 0.9rem;
+      border-top: 1px solid var(--rule-soft);
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--ink-faint);
+      letter-spacing: 0.08em;
+      display: flex;
+      justify-content: space-between;
+    }
+    .qa-response { background: var(--bg-card); display: flex; flex-direction: column; }
+    .qa-response-head {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 1.1rem;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      color: var(--ink-mute);
+      text-transform: uppercase;
+    }
+    .qa-path .qa-seg { color: var(--ink-faint); }
+    .qa-path .qa-cur { color: var(--accent-ink); font-weight: 500; letter-spacing: 0.04em; }
+    .qa-spacer { flex: 1; }
+    .qa-status { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.58rem; color: var(--ink-mute); }
+    .qa-status::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--ink-faint); }
+    .qa-status.live::before { background: oklch(0.62 0.14 145); animation: qaPulse 1.4s ease-in-out infinite; }
+    @keyframes qaPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    .qa-response-body { flex: 1; padding: 1.75rem 2rem 1.5rem; display: flex; flex-direction: column; }
+    .qa-r-q {
+      display: grid;
+      grid-template-columns: 3.5rem 1fr;
+      gap: 0.9rem;
+      align-items: baseline;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--rule-soft);
+      margin-bottom: 1.25rem;
+    }
+    .qa-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      padding-top: 0.25rem;
+    }
+    .qa-r-a .qa-label { color: var(--accent-ink); padding-top: 0.3rem; }
+    .qa-r-q .qa-text { font-family: var(--sans); font-size: 1.1rem; font-weight: 500; color: var(--ink); letter-spacing: -0.01em; line-height: 1.3; }
+    .qa-r-a {
+      display: grid;
+      grid-template-columns: 3.5rem 1fr;
+      gap: 0.9rem;
+      align-items: start;
+      margin-bottom: 1.5rem;
+    }
+    .qa-r-a .qa-text {
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      max-width: 620px;
+      min-height: 5em;
+      text-wrap: pretty;
+    }
+    .qa-r-a .qa-text code {
+      font-family: var(--mono);
+      font-size: 0.82em;
+      background: var(--bg-alt);
+      color: var(--accent-ink);
+      padding: 1px 5px;
+      border-radius: 2px;
+      border: 1px solid var(--rule-soft);
+    }
+    .qa-r-a .qa-text .hl { color: var(--ink); font-weight: 500; box-shadow: inset 0 -0.35em 0 var(--accent-tint); }
+    .qa-r-a .qa-text .qa-caret {
+      display: inline-block;
+      width: 0.55ch;
+      height: 1em;
+      background: var(--accent);
+      vertical-align: -0.1em;
+      margin-left: 1px;
+      animation: qaCaretBlink 0.9s steps(1) infinite;
+    }
+    @keyframes qaCaretBlink { 50% { opacity: 0; } }
+
+    .qa-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.4rem;
+      padding: 0.7rem 0;
+      margin-bottom: 1rem;
+      border-top: 1px dashed var(--rule-soft);
+      border-bottom: 1px dashed var(--rule-soft);
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--ink-mute);
+      letter-spacing: 0.05em;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .qa-meta.visible { opacity: 1; transform: none; }
+    .qa-meta .k { color: var(--ink-faint); margin-right: 0.35rem; }
+    .qa-meta .v { color: var(--ink-soft); }
+    .qa-meta .meta-tags { display: flex; gap: 0.3rem; }
+    .qa-meta .meta-tag { padding: 1px 5px; background: var(--bg-alt); border: 1px solid var(--rule); border-radius: 2px; font-size: 0.58rem; color: var(--ink-soft); }
+
+    .qa-followups {
+      margin-top: auto;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--rule);
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+    }
+    .qa-followups.visible { opacity: 1; transform: none; }
+    .qa-followups-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    .qa-followups-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .qa-chip {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+      background: var(--bg-main);
+      border: 1px solid var(--rule);
+      padding: 0.38rem 0.7rem 0.38rem 0.55rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      line-height: 1.2;
+    }
+    .qa-chip .chip-prefix { font-family: var(--mono); font-size: 0.6rem; color: var(--ink-faint); letter-spacing: 0.04em; }
+    .qa-chip:hover { background: var(--bg-card); border-color: var(--accent); color: var(--ink); }
+    .qa-chip:hover .chip-prefix { color: var(--accent-ink); }
 
     /* ————— Projects ————— */
     .projects-header {
@@ -771,6 +1049,11 @@
       .hero-scroll { display: none; }
       .hero-arc { font-size: 0.7rem; gap: 0.5rem; padding: 0.6rem 0.8rem; }
       .skills-grid, .project-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+      .qa-console { grid-template-columns: 1fr; }
+      .qa-index { max-height: 220px; }
+      .about-kicker { flex-direction: column; gap: 1.25rem; }
+      .about-stats { flex-direction: row; gap: 1.5rem; }
+      .about-stat { align-items: flex-start; }
       .project-hero-title { font-size: 1.8rem; }
     }
 
@@ -870,14 +1153,85 @@
 
     <!-- ————— About ————— -->
     <section class="section section-alt" id="about">
-      <div class="section-inner">
+      <div class="section-inner" style="max-width: 920px;">
         <div class="cell-label">02 · about</div>
-        <p class="about-intro" style="font-size: 22px">
-          I came up through product and education. What carried over wasn't the domain — it was the instinct to ask <em>"what's actually going on here?"</em> before jumping to conclusions.
-        </p>
-        <p class="about-intro" style="font-size: 22px">
-          Now I answer that question as an analyst — with SQL, dashboards, and increasingly, AI tools I build myself when the off-the-shelf ones don't fit.
-        </p>
+
+        <div class="about-kicker">
+          <h2>
+            I'm an analyst who builds the tool when the off-the-shelf one doesn't fit.<br>
+            <span class="accent">Ask me anything on the left</span> — answers are mine, hand-written.
+          </h2>
+          <div class="about-stats">
+            <div class="about-stat">
+              <span class="v" id="qa-stat-q">06</span>
+              <span>questions</span>
+            </div>
+            <div class="about-stat">
+              <span class="v">TOR</span>
+              <span>est · remote-ok</span>
+            </div>
+            <div class="about-stat">
+              <span class="v">Q2 26</span>
+              <span>next window</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-console">
+          <!-- left: question index -->
+          <aside class="qa-index">
+            <div class="qa-index-head">
+              <span>questions</span>
+              <span class="qa-count-badge" id="qa-count">06</span>
+            </div>
+            <div class="qa-search">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="7" cy="7" r="4"/><line x1="10" y1="10" x2="13" y2="13"/></svg>
+              <input id="qa-search-input" type="text" placeholder="filter…" spellcheck="false">
+              <kbd>/</kbd>
+            </div>
+            <div class="qa-q-list" id="qa-q-list" role="listbox"></div>
+            <div class="qa-index-footer">
+              <span id="qa-shown">06 of 06</span>
+              <span>↑↓ browse · ↵ select</span>
+            </div>
+          </aside>
+
+          <!-- right: response panel -->
+          <div class="qa-response">
+            <div class="qa-response-head">
+              <span class="qa-path">
+                <span class="qa-seg">/about</span>
+                <span class="qa-seg">/qa</span>
+                <span class="qa-seg">/</span>
+                <span class="qa-cur" id="qa-res-path">—</span>
+              </span>
+              <span class="qa-spacer"></span>
+              <span class="qa-status" id="qa-res-status">idle</span>
+            </div>
+            <div class="qa-response-body">
+              <div class="qa-r-q">
+                <span class="qa-label">query</span>
+                <span class="qa-text" id="qa-r-q">Select a question from the index →</span>
+              </div>
+              <div class="qa-r-a">
+                <span class="qa-label">reply</span>
+                <span class="qa-text" id="qa-r-a"><span style="color: var(--ink-faint);">Awaiting selection.</span></span>
+              </div>
+              <div class="qa-meta" id="qa-meta">
+                <span><span class="k">read_time</span><span class="v" id="qa-m-time">—</span></span>
+                <span><span class="k">tone</span><span class="v" id="qa-m-tone">—</span></span>
+                <span class="meta-tags" id="qa-m-tags"></span>
+              </div>
+              <div class="qa-followups" id="qa-followups">
+                <div class="qa-followups-label">
+                  <span>related_queries</span>
+                  <span>n = 3</span>
+                </div>
+                <div class="qa-followups-row" id="qa-followups-row"></div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="skills-grid">
           <div class="skills-column">
@@ -899,7 +1253,6 @@
               <div class="skill-item-desc">Discovery → delivery, comfortable in the full loop.</div>
             </div>
           </div>
-
           <div class="skills-column">
             <h3 data-num="B.">How I execute</h3>
             <div class="skill-item">
@@ -1543,14 +1896,12 @@ window.addEventListener('scroll', () => {
   if (!el) return;
 
   const segs = [
-    { text: "I'm an analyst." },
+    { text: 'Four years in product taught me' },
     { br: true },
-    { text: 'I find the story in the data and make it land' },
+    { text: 'which problems are worth solving.' },
     { br: true },
-    { text: 'with the people who need to act on it —' },
-    { br: true },
-    { text: 'faster now, ', em: true },
-    { text: 'because I build my own AI tooling.' }
+    { text: 'Analytics and AI ', em: true },
+    { text: 'are how I solve them now.' }
   ];
 
   const words = [];
@@ -1639,6 +1990,175 @@ catEgg.addEventListener('click', (e) => {
   clearTimeout(window.__catTimer);
   window.__catTimer = setTimeout(() => catBubble.classList.remove('show'), 2400);
 });
+
+/* ————— Q&A Console ————— */
+(function initQA() {
+  const qaData = [
+    {
+      slug: "what-i-do",
+      q: "So what do you actually do?",
+      a: `I solve business problems with analysis and AI, and <span class="hl">build the tool when there isn't one.</span> Four years as a PM taught me which problems are worth solving.`,
+      tone: "candid", tags: ["role", "pm-background"], time: "0:22", followups: [1, 2, 4],
+    },
+    {
+      slug: "why-shift-from-pm",
+      q: "Why the shift from PM?",
+      a: `Same instinct, better tools. As a PM I figured out what was broken and what to build. <span class="hl">Now I can build it myself.</span>`,
+      tone: "reflective", tags: ["background", "transition"], time: "0:16", followups: [0, 2, 3],
+    },
+    {
+      slug: "what-makes-you-different",
+      q: "What makes you different from other analysts?",
+      a: `I came from product. I find the question first, and sometimes the answer isn't a dashboard — <span class="hl">it's a small tool that kills the problem entirely.</span>`,
+      tone: "opinionated", tags: ["differentiation", "product"], time: "0:20", followups: [0, 3, 4],
+    },
+    {
+      slug: "got-an-example",
+      q: "Got an example?",
+      a: `Sure. Scroll down — <span class="hl">the projects below are all things I built because the off-the-shelf option didn't fit.</span>`,
+      tone: "direct", tags: ["projects", "examples"], time: "0:12", followups: [0, 2, 4],
+    },
+    {
+      slug: "what-gets-you-out-of-bed",
+      q: "What kind of problem gets you out of bed?",
+      a: `Anything that starts with <span class="hl">"first, export to Excel and then…"</span>`,
+      tone: "dry", tags: ["motivation", "problems"], time: "0:10", followups: [0, 2, 5],
+    },
+    {
+      slug: "how-to-hire",
+      q: "How do I hire you?",
+      a: `Toronto, <code>EST</code>, remote-ok. Email or LinkedIn. <span class="hl">I work best on teams that want an analyst who ships tools, not just reports.</span>`,
+      tone: "direct", tags: ["hiring", "contact", "location"], time: "0:18", followups: [0, 1, 4],
+    },
+  ];
+
+  const qList = document.getElementById('qa-q-list');
+  const rQ = document.getElementById('qa-r-q');
+  const rA = document.getElementById('qa-r-a');
+  const qaMeta = document.getElementById('qa-meta');
+  const mTime = document.getElementById('qa-m-time');
+  const mTone = document.getElementById('qa-m-tone');
+  const mTags = document.getElementById('qa-m-tags');
+  const followups = document.getElementById('qa-followups');
+  const followupsRow = document.getElementById('qa-followups-row');
+  const resPath = document.getElementById('qa-res-path');
+  const resStatus = document.getElementById('qa-res-status');
+  const qaShown = document.getElementById('qa-shown');
+  const searchInput = document.getElementById('qa-search-input');
+  if (!qList) return;
+
+  let currentQAIndex = null;
+
+  function renderIndex(filter) {
+    const f = (filter || '').trim().toLowerCase();
+    const visible = qaData.filter((x, i) => {
+      return !f || x.q.toLowerCase().includes(f) || x.tags.join(' ').includes(f);
+    });
+    qList.innerHTML = qaData.map((x, i) => {
+      const show = !f || x.q.toLowerCase().includes(f) || x.tags.join(' ').includes(f);
+      if (!show) return '';
+      return `<button class="qa-q-item${currentQAIndex === i ? ' active' : ''}" data-i="${i}" role="option">
+        <span class="qa-num">${String(i+1).padStart(2,'0')}</span>
+        <span>${x.q}</span>
+        <span class="qa-arrow">→</span>
+      </button>`;
+    }).join('');
+    const shown = visible.length;
+    if (qaShown) qaShown.textContent = `${String(shown).padStart(2,'0')} of ${String(qaData.length).padStart(2,'0')}`;
+  }
+  renderIndex('');
+
+  let typingTimer = null;
+  function typeAnswer(html, onDone) {
+    if (typingTimer) clearInterval(typingTimer);
+    const tagRe = /<(code|em)>([\s\S]*?)<\/\1>|<span class="hl">([\s\S]*?)<\/span>/g;
+    const tokens = [];
+    let last = 0, m;
+    while ((m = tagRe.exec(html)) !== null) {
+      if (m.index > last) tokens.push({ kind: 'text', text: html.slice(last, m.index) });
+      if (m[1]) tokens.push({ kind: m[1], text: m[2] });
+      else tokens.push({ kind: 'hl', text: m[3] });
+      last = m.index + m[0].length;
+    }
+    if (last < html.length) tokens.push({ kind: 'text', text: html.slice(last) });
+
+    const wrap = (tok, partial) => {
+      const t = partial != null ? partial : tok.text;
+      if (tok.kind === 'code') return `<code>${t}</code>`;
+      if (tok.kind === 'em') return `<em>${t}</em>`;
+      if (tok.kind === 'hl') return `<span class="hl">${t}</span>`;
+      return t;
+    };
+
+    let ti = 0, ci = 0;
+    const render = () => {
+      let out = '';
+      for (let i = 0; i < ti; i++) out += wrap(tokens[i]);
+      if (tokens[ti]) out += wrap(tokens[ti], tokens[ti].text.slice(0, ci));
+      rA.innerHTML = out + '<span class="qa-caret"></span>';
+    };
+
+    typingTimer = setInterval(() => {
+      if (ti >= tokens.length) {
+        clearInterval(typingTimer); typingTimer = null;
+        rA.innerHTML = rA.innerHTML.replace(/<span class="qa-caret"><\/span>/, '');
+        if (onDone) onDone();
+        return;
+      }
+      ci += 2;
+      if (ci >= tokens[ti].text.length) { ti++; ci = 0; }
+      render();
+    }, 14);
+    render();
+  }
+
+  function selectQA(i) {
+    if (i == null || i < 0 || i >= qaData.length) return;
+    currentQAIndex = i;
+    document.querySelectorAll('.qa-q-item').forEach(el => el.classList.toggle('active', +el.dataset.i === i));
+    const item = qaData[i];
+    rQ.textContent = item.q;
+    if (resPath) resPath.textContent = item.slug;
+    if (resStatus) { resStatus.textContent = 'typing'; resStatus.classList.add('live'); }
+    qaMeta.classList.remove('visible');
+    followups.classList.remove('visible');
+
+    typeAnswer(item.a, () => {
+      if (mTime) mTime.textContent = item.time;
+      if (mTone) mTone.textContent = item.tone;
+      if (mTags) mTags.innerHTML = item.tags.map(t => `<span class="meta-tag">${t}</span>`).join('');
+      qaMeta.classList.add('visible');
+      followupsRow.innerHTML = item.followups.map(fi => `
+        <button class="qa-chip" data-i="${fi}">
+          <span class="chip-prefix">${String(fi+1).padStart(2,'0')}</span>${qaData[fi].q}
+        </button>`).join('');
+      followups.classList.add('visible');
+      if (resStatus) { resStatus.textContent = 'ready'; resStatus.classList.remove('live'); }
+    });
+  }
+
+  qList.addEventListener('click', e => {
+    const btn = e.target.closest('.qa-q-item');
+    if (btn) selectQA(+btn.dataset.i);
+  });
+  followupsRow.addEventListener('click', e => {
+    const btn = e.target.closest('.qa-chip');
+    if (btn) {
+      selectQA(+btn.dataset.i);
+      const el = qList.querySelector(`.qa-q-item[data-i="${btn.dataset.i}"]`);
+      if (el) el.scrollIntoView({ block: 'nearest' });
+    }
+  });
+  if (searchInput) {
+    searchInput.addEventListener('input', e => renderIndex(e.target.value));
+    document.addEventListener('keydown', e => {
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault(); searchInput.focus();
+      }
+      if (e.key === 'Escape') searchInput.blur();
+    });
+  }
+})();
 
 /* Init */
 goHome();
