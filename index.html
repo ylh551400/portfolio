@@ -836,6 +836,21 @@
     }
     .fade-up.in { opacity: 1; transform: none; }
 
+    /* ── Cursor light ── */
+    .cursor-light {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle,
+        oklch(0.68 0.18 20 / 0.07) 0%,
+        oklch(0.68 0.18 20 / 0.03) 45%,
+        transparent 70%
+      );
+    }
+
     @media (max-width: 900px) {
       .sidebar { width: 100%; height: auto; position: relative; padding: 1rem 1.5rem; flex-direction: row; align-items: center; flex-wrap: wrap; }
       .nav-section, .sidebar-tag { display: none; }
@@ -851,6 +866,7 @@
   </style>
 </head>
 <body>
+<div class="cursor-light" id="cursorLight"></div>
 <div class="layout">
 
   <!-- ── Top Nav ── -->
@@ -1119,6 +1135,22 @@
 
 <script>
 
+
+/* ── Cursor Light ── */
+(function() {
+  const light = document.getElementById('cursorLight');
+  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+  let cx = mx, cy = my;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animate() {
+    cx += (mx - cx) * 0.06;
+    cy += (my - cy) * 0.06;
+    light.style.left = cx + 'px';
+    light.style.top  = cy + 'px';
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
 
 /* ── Scroll spy ── */
 const topNavLinks = document.querySelectorAll('.top-nav-link');
